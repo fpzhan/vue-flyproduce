@@ -4,7 +4,7 @@
       <h1>table5</h1>
     </router-link>
     <div class="ui container">
-      <action :fly-action="actions" id="tmp">
+      <fly-produce :fly-action="actions" id="tmp">
         <div>
           班级id&nbsp;&nbsp;&nbsp;<input
             type="text"
@@ -46,13 +46,13 @@
             v-model="data.output.studentNo"
           />
         </div>
-      </action>
+      </fly-produce>
     </div>
   </div>
 </template>
 
 <script>
-import { Aa } from "@/views/all/flyproduce";
+import { Aa } from "./all/flyproduce";
 import $ from "jquery";
 
 export default {

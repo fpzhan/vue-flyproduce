@@ -1,15 +1,12 @@
-<template>
-  <div>
-    <slot></slot>
-  </div>
-</template>
-
+<template
+  ><div><slot></slot></div
+></template>
 <script>
 import $ from "jquery";
 import Vue from "vue";
 
 export default {
-  name: "action",
+  name: "flyProduce",
   props: {
     flyAction: Object,
     url: String,

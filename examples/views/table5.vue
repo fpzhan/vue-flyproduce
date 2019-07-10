@@ -41,7 +41,7 @@
 <script>
 import Vuetable from "vuetable-2";
 import VuetablePagination from "vuetable-2/src/components/VuetablePagination";
-import { Aa } from "@/views/all/flyproduce";
+import { Aa } from "./all/flyproduce";
 import $ from "jquery";
 
 export default {
