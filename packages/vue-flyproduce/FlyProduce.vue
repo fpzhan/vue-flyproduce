@@ -25,7 +25,8 @@ export default {
     sizeName: String /*每页多少条数据参数名*/,
     dataPath: String /*返回数据路径*/,
     pagesPath: String /*返回总页数路径*/,
-    currentPath: String /*返回当前第几页路径*/
+    currentPath: String /*返回当前第几页路径*/,
+    submitEvent: String /*绑定submitId节点的事件名称，例如：click*/
   },
   data() {
     return {
@@ -38,9 +39,14 @@ export default {
     this.$nextTick(function() {
       //页面渲染完成后，进行触发ajax请求节点的元素绑定
       current.getProps("submitId") &&
-        $("#" + current.getProps("submitId")).bind("click", function() {
-          current.action();
-        });
+        $("#" + current.getProps("submitId")).bind(
+          current.getProps("submitEvent")
+            ? current.getProps("submitEvent")
+            : "click",
+          function() {
+            current.action();
+          }
+        );
       //页面加载完成后，初始化数据请求
       current.getProps("init") && current.action();
     });

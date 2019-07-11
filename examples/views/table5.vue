@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="ui container">
     <h1>&lt;Vuetable-2&gt;</h1>
-    <action :fly-action="actions" id="tmp"></action>
+    <fly-produce :fly-action="actions" id="tmp"></fly-produce>
     <vuetable
       ref="vuetable"
       :api-mode="false"

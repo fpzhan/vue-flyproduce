@@ -1,8 +1,5 @@
 <template>
   <div class="about">
-    <router-link to="testTable5">
-      <h1>table5</h1>
-    </router-link>
     <div class="ui container">
       <fly-produce :fly-action="actions" id="tmp">
         <div>
