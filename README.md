@@ -29,6 +29,10 @@ npm run build
 ```
 https://github.com/fpzhan/vue-flyproduce.git
 ```
+examples目录--flyproduce.js 如何在vue中添加vue-flyproduce插件的示例
+
+examples目录--main.js  创建vue初始化的示例
+
 examples目录--views目录--all目录中的代码是[flyproduce网站](http://www.flyproduce.com)生成的。
 
 examples目录--views目录--About.vue是vue-flyproduce插件在表单中如何使用的示例。
