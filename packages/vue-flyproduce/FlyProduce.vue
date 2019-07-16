@@ -5,6 +5,16 @@
 import $ from "jquery";
 import Vue from "vue";
 
+function contains(a, obj) {
+  var i = a.length;
+  while (i--) {
+    if (a[i] === obj) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default {
   name: "flyProduce",
   props: {
@@ -31,7 +41,30 @@ export default {
   data() {
     return {
       //ajax发起请求时，数据存储的位置
-      ajaxData: {}
+      ajaxData: {},
+      ajaxParam: [
+        "options",
+        "async",
+        "beforeSend",
+        "cache",
+        "complete",
+        "contentType",
+        "context",
+        "dataFilter",
+        "dataType",
+        "global",
+        "ifModified",
+        "jsonp",
+        "jsonpCallback",
+        "password",
+        "processData",
+        "scriptCharset",
+        "traditional",
+        "timeout",
+        "type",
+        "username",
+        "xhr"
+      ]
     };
   },
   mounted: function() {
@@ -111,6 +144,7 @@ export default {
           return this.$props[str];
         }
       } else if (
+        str != undefined &&
         this.$props.flyAction &&
         this.$props.flyAction instanceof FlyInterface &&
         this.$props.flyAction.infos[str]
@@ -122,6 +156,12 @@ export default {
           return this.$props.flyAction.infos[str].infos;
         } else {
           return this.$props.flyAction.infos[str];
+        }
+      } else if (str == undefined) {
+        if (this.$props.flyAction instanceof FlyInterface) {
+          return this.$props.flyAction.infos;
+        } else {
+          return this.$props;
         }
       }
     },
@@ -185,21 +225,21 @@ export default {
         if (current.getProps("input") instanceof Array) {
           console.error("请设置contentType参数为application/json");
         }
-        var str = "";
-        if (current.getProps("input")) {
-          for (var key in current.getProps("input")) {
-            str += key + "=" + current.getProps("input")[key] + "&";
-          }
-        }
-        if (str.length > 0) {
-          str = str.substring(0, str.length - 1);
-        }
-        this._data.ajaxData = str;
+        // var str = "";
+        // if (current.getProps("input")) {
+        //   for (var key in current.getProps("input")) {
+        //     str += key + "=" + current.getProps("input")[key] + "&";
+        //   }
+        // }
+        // if (str.length > 0) {
+        //   str = str.substring(0, str.length - 1);
+        // }
+        debugger;
+        this._data.ajaxData = current.getProps("input");
       }
       debugger;
-      $.ajax({
+      var ajaxObj = {
         url: current.getProps("url"),
-        type: "post",
         data: this._data.ajaxData,
         success: function(res) {
           if (res.status == 200) {
@@ -229,7 +269,21 @@ export default {
             current.clearObject(current.getProps("input"));
           }
         }
-      });
+      };
+
+      var param = this.getProps();
+      if (param != undefined && typeof param == "object") {
+        for (var name in param) {
+          if (
+            param[name] != undefined &&
+            contains(name, this._data.ajaxParam)
+          ) {
+            ajaxObj[name] = param[name];
+          }
+        }
+      }
+
+      $.ajax(ajaxObj);
     }
   },
   watch: {
