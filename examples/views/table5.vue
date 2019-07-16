@@ -15,18 +15,6 @@
         >
           <i class="zoom icon"></i>
         </button>
-        <button
-          class="ui small button"
-          @click="onActionClicked('edit-item', props.rowData)"
-        >
-          <i class="edit icon"></i>
-        </button>
-        <button
-          class="ui small button"
-          @click="onActionClicked('delete-item', props.rowData)"
-        >
-          <i class="delete icon"></i>
-        </button>
       </div>
     </vuetable>
     <div style="padding-top:10px">
