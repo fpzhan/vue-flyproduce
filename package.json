@@ -1,8 +1,8 @@
 {
   "name": "vue-flyproduce",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
-  "description": "This is a util for produce code.It's must be use web ,url 'https://www.flyproduce.com'",
+  "description": "vue-flyproduce是对生成js代码进行调用的一个插件，配合代码生成网站(www.flyproduce.com)可以进行快速开发。更多详细请看插件介绍",
   "main": "dist/flyProduce.umd.min.js",
   "license": "MIT",
   "author": "fupengzhan",
