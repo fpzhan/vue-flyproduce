@@ -30,6 +30,11 @@ npm run build
 https://github.com/fpzhan/vue-flyproduce.git
 ```
 examples目录--views目录--all目录中的代码是[flyproduce网站](http://www.flyproduce.com)生成的。
+
+examples目录--views目录--About.vue是vue-flyproduce插件在表单中如何使用的示例。
+
+examples目录--views目录--table5.vue是vue-flyproduce插件在table中如何使用的示例。(table插件使用vue-table2)
+
 <br/>
 
 ### vue-flyproduce使用api
