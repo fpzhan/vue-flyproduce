@@ -24,7 +24,7 @@ npm run build
    
 ### 教程
 [flyproduce网站](http://www.flyproduce.com)中有详细的视频教程以及图文教程。
-
+或者直接下载[百度网盘](https://pan.baidu.com/s/1hm7GoZyG9e30oZ5Smptm_w) 提取码：fd0u
 ### github地址
 ```
 https://github.com/fpzhan/vue-flyproduce.git
