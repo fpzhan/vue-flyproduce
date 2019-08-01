@@ -14,6 +14,12 @@ export default {
       paginationRef: "" /*分页组件的ref值*/,
       pageValue: 1 /*当前第几个页*/,
       size: 10 /*每页多少条数据*/,
+
+      pages: 0 /*返回的总页数*/,
+      total: 0 /*返回的数据总数*/,
+      statusPath: "status" /*返回状态参数路径*/,
+      totalPath: "total" /*返回总数据路径*/,
+
       currentName: "current" /*请求第几页传入参数名*/,
       sizeName: "size" /*每页多少条数据参数名*/,
       dataPath: "data" /*返回数据路径*/,

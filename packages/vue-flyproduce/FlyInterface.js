@@ -56,6 +56,19 @@
     this.flyChangePage = function(page) {
       this.infos.pageValue = page;
     };
+    this.getPage = function() {
+      debugger;
+      return this.infos.pageValue;
+    };
+
+    this.getTotal = function() {
+      debugger;
+      return this.infos.total;
+    };
+
+    this.getSize = function() {
+      return this.infos.size;
+    };
   };
   window.FlyInterface = FlyInterface;
 })();

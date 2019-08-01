@@ -131,7 +131,7 @@ export default {
           this.setVal(mData, mVal, list);
           list.pop();
         }
-      } else {
+      } else if (typeof val != "function" && typeof data != "function") {
         eval(dataStr + "=" + valStr);
       }
     },
@@ -183,6 +183,11 @@ export default {
           this.$props.flyAction.infos[str] instanceof FlyEntity
         ) {
           this.setVal(this.$props.flyAction.infos[str].infos, val);
+        } else if (
+          typeof this.$props.flyAction.infos[str] == "string" ||
+          typeof this.$props.flyAction.infos[str] == "number"
+        ) {
+          this.props.flyAction.infos[str] = val;
         } else {
           this.setVal(this.$props.flyAction.infos[str], val);
         }
@@ -242,12 +247,25 @@ export default {
         url: current.getProps("url"),
         data: this._data.ajaxData,
         success: function(res) {
-          if (res.status == 200) {
+          if (res[current.getProps("statusPath")] == 200) {
             current.setProps("output", res[current.getProps("dataPath")]);
             if (
               current.getProps("paginationRef") &&
               current.getProps("paginationRef") != ""
             ) {
+              if (
+                current.getProps("pagesPath") &&
+                current.getProps("pagesPath") != ""
+              ) {
+                current.setProps("pages", res[current.getProps("pagesPath")]);
+              }
+              if (
+                current.getProps("totalPath") &&
+                current.getProps("totalPath") != ""
+              ) {
+                current.setProps("total", res[current.getProps("totalPath")]);
+              }
+
               var pageData = {
                 last_page: res[current.getProps("pagesPath")],
                 current_page: res[current.getProps("currentPath")]
