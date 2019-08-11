@@ -1,6 +1,6 @@
 {
   "name": "vue-flyproduce",
-  "version": "0.1.0",
+  "version": "0.1.7",
   "private": false,
   "description": "This is a util for produce code.It's must be use web ,url 'https://www.flyproduce.com'",
   "main": "dist/flyProduce.umd.min.js",

@@ -132,11 +132,23 @@ export default {
         this.$props.flyAction instanceof FlyInterface &&
         this.$props.flyAction.infos[str]
       ) {
+        debugger;
         if (
           str == "input" &&
           this.$props.flyAction.infos[str] instanceof FlyEntity
         ) {
           this.setVal(this.$props.flyAction.infos[str].infos, val);
+        } else if (
+          typeof this.$props.flyAction.infos[str] == "string" ||
+          typeof this.$props.flyAction.infos[str] == "number"
+        ) {
+          this.$props.flyAction.infos[str] = val;
+        } else if (val == undefined) {
+          if (this.$props.flyAction.infos[str] instanceof Array) {
+            this.setVal(this.$props.flyAction.infos[str], []);
+          } else if (typeof this.$props.flyAction.infos[str] == "object") {
+            this.setVal(this.$props.flyAction.infos[str], {});
+          }
         } else {
           this.setVal(this.$props.flyAction.infos[str], val);
         }
@@ -197,6 +209,7 @@ export default {
         data: this._data.ajaxData,
         success: function(res) {
           if (res.status == 200) {
+            debugger;
             current.setProps("output", res[current.getProps("dataPath")]);
             if (
               current.getProps("paginationRef") &&

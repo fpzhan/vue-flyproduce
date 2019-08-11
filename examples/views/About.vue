@@ -52,19 +52,19 @@
 </template>
 
 <script>
-import { Aa } from "./all/flyproduce";
+import { student } from "./newall/javaBackstage";
 import $ from "jquery";
 
 export default {
   data() {
     var all = {
       data: {
-        input: Aa.objects.Student({ studentId: 1 }).instance(),
-        output: Aa.objects.Student().instance(),
+        input: student.objects.StudentEntity({ studentId: 1 }).instance(),
+        output: student.objects.StudentEntity().instance(),
         init: true,
         submitId: "addEles"
       },
-      operation: Aa.interfaces.selectFlyStudentInfo()
+      operation: student.interfaces.selectFlyStudentInfo()
     };
     $.extend(all, {
       actions: all.operation.overrideBy(all.data)
