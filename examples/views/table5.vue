@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="ui container">
     <h1>&lt;Vuetable-2&gt;</h1>
-    <action :fly-action="actions" id="tmp"></action>
+    <fly-produce :fly-action="actions" id="tmp"></fly-produce>
     <vuetable
       ref="vuetable"
       :api-mode="false"
@@ -14,18 +14,6 @@
           @click="onActionClicked('view-item', props.rowData)"
         >
           <i class="zoom icon"></i>
-        </button>
-        <button
-          class="ui small button"
-          @click="onActionClicked('edit-item', props.rowData)"
-        >
-          <i class="edit icon"></i>
-        </button>
-        <button
-          class="ui small button"
-          @click="onActionClicked('delete-item', props.rowData)"
-        >
-          <i class="delete icon"></i>
         </button>
       </div>
     </vuetable>

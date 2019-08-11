@@ -5,6 +5,16 @@
 import $ from "jquery";
 import Vue from "vue";
 
+function contains(a, obj) {
+  var i = a.length;
+  while (i--) {
+    if (a[i] === obj) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default {
   name: "flyProduce",
   props: {
@@ -25,12 +35,36 @@ export default {
     sizeName: String /*每页多少条数据参数名*/,
     dataPath: String /*返回数据路径*/,
     pagesPath: String /*返回总页数路径*/,
-    currentPath: String /*返回当前第几页路径*/
+    currentPath: String /*返回当前第几页路径*/,
+    submitEvent: String /*绑定submitId节点的事件名称，例如：click*/
   },
   data() {
     return {
       //ajax发起请求时，数据存储的位置
-      ajaxData: {}
+      ajaxData: {},
+      ajaxParam: [
+        "options",
+        "async",
+        "beforeSend",
+        "cache",
+        "complete",
+        "contentType",
+        "context",
+        "dataFilter",
+        "dataType",
+        "global",
+        "ifModified",
+        "jsonp",
+        "jsonpCallback",
+        "password",
+        "processData",
+        "scriptCharset",
+        "traditional",
+        "timeout",
+        "type",
+        "username",
+        "xhr"
+      ]
     };
   },
   mounted: function() {
@@ -38,9 +72,14 @@ export default {
     this.$nextTick(function() {
       //页面渲染完成后，进行触发ajax请求节点的元素绑定
       current.getProps("submitId") &&
-        $("#" + current.getProps("submitId")).bind("click", function() {
-          current.action();
-        });
+        $("#" + current.getProps("submitId")).bind(
+          current.getProps("submitEvent")
+            ? current.getProps("submitEvent")
+            : "click",
+          function() {
+            current.action();
+          }
+        );
       //页面加载完成后，初始化数据请求
       current.getProps("init") && current.action();
     });
@@ -92,7 +131,7 @@ export default {
           this.setVal(mData, mVal, list);
           list.pop();
         }
-      } else {
+      } else if (typeof val != "function" && typeof data != "function") {
         eval(dataStr + "=" + valStr);
       }
     },
@@ -105,6 +144,7 @@ export default {
           return this.$props[str];
         }
       } else if (
+        str != undefined &&
         this.$props.flyAction &&
         this.$props.flyAction instanceof FlyInterface &&
         this.$props.flyAction.infos[str]
@@ -116,6 +156,12 @@ export default {
           return this.$props.flyAction.infos[str].infos;
         } else {
           return this.$props.flyAction.infos[str];
+        }
+      } else if (str == undefined) {
+        if (this.$props.flyAction instanceof FlyInterface) {
+          return this.$props.flyAction.infos;
+        } else {
+          return this.$props;
         }
       }
     },
@@ -132,12 +178,16 @@ export default {
         this.$props.flyAction instanceof FlyInterface &&
         this.$props.flyAction.infos[str]
       ) {
-        debugger;
         if (
           str == "input" &&
           this.$props.flyAction.infos[str] instanceof FlyEntity
         ) {
           this.setVal(this.$props.flyAction.infos[str].infos, val);
+        } else if (
+          typeof this.$props.flyAction.infos[str] == "string" ||
+          typeof this.$props.flyAction.infos[str] == "number"
+        ) {
+          this.props.flyAction.infos[str] = val;
         } else if (
           typeof this.$props.flyAction.infos[str] == "string" ||
           typeof this.$props.flyAction.infos[str] == "number"
@@ -191,30 +241,42 @@ export default {
         if (current.getProps("input") instanceof Array) {
           console.error("请设置contentType参数为application/json");
         }
-        var str = "";
-        if (current.getProps("input")) {
-          for (var key in current.getProps("input")) {
-            str += key + "=" + current.getProps("input")[key] + "&";
-          }
-        }
-        if (str.length > 0) {
-          str = str.substring(0, str.length - 1);
-        }
-        this._data.ajaxData = str;
+        // var str = "";
+        // if (current.getProps("input")) {
+        //   for (var key in current.getProps("input")) {
+        //     str += key + "=" + current.getProps("input")[key] + "&";
+        //   }
+        // }
+        // if (str.length > 0) {
+        //   str = str.substring(0, str.length - 1);
+        // }
+        debugger;
+        this._data.ajaxData = current.getProps("input");
       }
       debugger;
-      $.ajax({
+      var ajaxObj = {
         url: current.getProps("url"),
-        type: "post",
         data: this._data.ajaxData,
         success: function(res) {
-          if (res.status == 200) {
-            debugger;
+          if (res[current.getProps("statusPath")] == 200) {
             current.setProps("output", res[current.getProps("dataPath")]);
             if (
               current.getProps("paginationRef") &&
               current.getProps("paginationRef") != ""
             ) {
+              if (
+                current.getProps("pagesPath") &&
+                current.getProps("pagesPath") != ""
+              ) {
+                current.setProps("pages", res[current.getProps("pagesPath")]);
+              }
+              if (
+                current.getProps("totalPath") &&
+                current.getProps("totalPath") != ""
+              ) {
+                current.setProps("total", res[current.getProps("totalPath")]);
+              }
+
               var pageData = {
                 last_page: res[current.getProps("pagesPath")],
                 current_page: res[current.getProps("currentPath")]
@@ -236,7 +298,21 @@ export default {
             current.clearObject(current.getProps("input"));
           }
         }
-      });
+      };
+
+      var param = this.getProps();
+      if (param != undefined && typeof param == "object") {
+        for (var name in param) {
+          if (
+            param[name] != undefined &&
+            contains(name, this._data.ajaxParam)
+          ) {
+            ajaxObj[name] = param[name];
+          }
+        }
+      }
+
+      $.ajax(ajaxObj);
     }
   },
   watch: {
