@@ -33,8 +33,10 @@
       } else if (num instanceof Array) {
         this.infos = num;
       } else {
-        this.infos = [this.copy(this.infos)];
+        // this.infos = [this.copy(this.infos)];
+        this.infos=[]
       }
+
       return this;
     };
 

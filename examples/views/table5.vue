@@ -51,6 +51,7 @@ export default {
           .instance(),
         submitId: "addEle",
         init: true,
+        type: "post",
         paginationRef: "pagination"
       },
       operation: Aa.interfaces.selectFlyStudentPage()

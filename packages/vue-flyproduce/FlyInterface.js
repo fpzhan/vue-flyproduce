@@ -1,5 +1,12 @@
 (function() {
   var FlyInterface = function(obj) {
+    if (isObject(obj)) {
+      this.infos = obj;
+      this.infos.executeSize = 0;
+    } else {
+      this.infos = { executeSize: 0 };
+    }
+
     function isObject(data) {
       if (data instanceof Array) {
         return false;
@@ -11,12 +18,13 @@
       }
     }
 
-    if (isObject(obj)) {
-      this.infos = obj;
-    } else {
-      this.infos = {};
-    }
-    this.beforeInfos = JSON.parse(JSON.stringify(this.infos));
+    this.beforeInfos = undefined;
+
+    this.action = function() {
+      this.updateBeforeInfos();
+      this.infos.executeSize = this.infos.executeSize + 1;
+
+    };
 
     this.updateBeforeInfos = function() {
       this.beforeInfos = JSON.parse(JSON.stringify(this.infos));
@@ -35,7 +43,9 @@
       debugger;
       if (isObject(data)) {
         for (var key in data) {
-          this.infos[key] = data[key];
+          if (data[key] != undefined) {
+            this.infos[key] = data[key];
+          }
         }
       }
       return this;
@@ -53,10 +63,11 @@
     this.setSubmitId = function(str) {
       this.infos.submitId = str;
     };
-    this.flyChangePage = function(page) {
+    this.setPageValue = function(page) {
+      this.updateBeforeInfos();
       this.infos.pageValue = page;
     };
-    this.getPage = function() {
+    this.getPageValue = function() {
       debugger;
       return this.infos.pageValue;
     };
@@ -68,6 +79,10 @@
 
     this.getSize = function() {
       return this.infos.size;
+    };
+    this.setSize = function(size) {
+      this.updateBeforeInfos();
+      this.infos.size = size;
     };
   };
   window.FlyInterface = FlyInterface;

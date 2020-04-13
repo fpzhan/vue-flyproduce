@@ -28,7 +28,6 @@ export default {
     submitId: String /*触发查询节点的id*/,
     inputClear: Boolean /*查询完参数是否清空query*/,
     init: Boolean /*是否页面加载完成之后就进行初始化*/,
-    paginationRef: String /*vuetable分页插件ref名称*/,
     pageValue: Number /*当前第几页的值*/,
     size: Number /*每页多少条数据*/,
     currentName: String /*请求第几页传入参数名*/,
@@ -36,7 +35,8 @@ export default {
     dataPath: String /*返回数据路径*/,
     pagesPath: String /*返回总页数路径*/,
     currentPath: String /*返回当前第几页路径*/,
-    submitEvent: String /*绑定submitId节点的事件名称，例如：click*/
+    submitEvent: String /*绑定submitId节点的事件名称，例如：click*/,
+    needPage: Boolean /*是否需要分页*/
   },
   data() {
     return {
@@ -176,18 +176,14 @@ export default {
       } else if (
         this.$props.flyAction &&
         this.$props.flyAction instanceof FlyInterface &&
-        this.$props.flyAction.infos[str]
+        (this.$props.flyAction.infos[str] ||
+          this.$props.flyAction.infos[str] === 0)
       ) {
         if (
           str == "input" &&
           this.$props.flyAction.infos[str] instanceof FlyEntity
         ) {
           this.setVal(this.$props.flyAction.infos[str].infos, val);
-        } else if (
-          typeof this.$props.flyAction.infos[str] == "string" ||
-          typeof this.$props.flyAction.infos[str] == "number"
-        ) {
-          this.props.flyAction.infos[str] = val;
         } else if (
           typeof this.$props.flyAction.infos[str] == "string" ||
           typeof this.$props.flyAction.infos[str] == "number"
@@ -222,7 +218,8 @@ export default {
     //发起ajax请求
     action() {
       var current = this;
-      if (current.getProps("paginationRef")) {
+
+      if (current.getProps("needPage")) {
         current.getProps("input")[
           current.getProps("currentName")
         ] = current.getProps("pageValue");
@@ -260,10 +257,7 @@ export default {
         success: function(res) {
           if (res[current.getProps("statusPath")] == 200) {
             current.setProps("output", res[current.getProps("dataPath")]);
-            if (
-              current.getProps("paginationRef") &&
-              current.getProps("paginationRef") != ""
-            ) {
+            if (current.getProps("needPage")) {
               if (
                 current.getProps("pagesPath") &&
                 current.getProps("pagesPath") != ""
@@ -276,14 +270,6 @@ export default {
               ) {
                 current.setProps("total", res[current.getProps("totalPath")]);
               }
-
-              var pageData = {
-                last_page: res[current.getProps("pagesPath")],
-                current_page: res[current.getProps("currentPath")]
-              };
-              current.$parent.$refs[
-                current.getProps("paginationRef")
-              ].setPaginationData(pageData);
             }
           }
           current.getProps("success") && current.getProps("success")(res);
@@ -305,7 +291,7 @@ export default {
         for (var name in param) {
           if (
             param[name] != undefined &&
-            contains(name, this._data.ajaxParam)
+            contains(this._data.ajaxParam, name)
           ) {
             ajaxObj[name] = param[name];
           }
@@ -316,19 +302,27 @@ export default {
     }
   },
   watch: {
-    //监听第几页，改变进行值修改
-    pageValue: function() {
-      this.action();
-    },
+    // //监听第几页，改变进行值修改
+    // pageValue: function() {
+    //   this.action();
+    // },
     //监听第几页，改变进行值修改
     flyAction: {
       handler(obj) {
         debugger;
         var newValue = obj.infos;
         var oldValue = obj.beforeInfos;
-        if (newValue && oldValue && oldValue.pageValue != newValue.pageValue) {
-          this.action();
+        if (
+          newValue &&
+          oldValue &&
+          (oldValue.pageValue != newValue.pageValue ||
+            oldValue.size != newValue.size ||
+            (oldValue.executeSize != newValue.executeSize &&
+              newValue.executeSize != 0))
+        ) {
+          //setPageValue,setSize,action三个函数中添加了下面的方法。故这里去掉，以免数据初始化也会造成请求
           obj.updateBeforeInfos();
+          this.action();
         }
       },
       deep: true
