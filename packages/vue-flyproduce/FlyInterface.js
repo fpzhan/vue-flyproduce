@@ -64,7 +64,6 @@
       this.infos.submitId = str;
     };
     this.setPageValue = function(page) {
-      this.updateBeforeInfos();
       this.infos.pageValue = page;
     };
     this.getPageValue = function() {
@@ -81,7 +80,6 @@
       return this.infos.size;
     };
     this.setSize = function(size) {
-      this.updateBeforeInfos();
       this.infos.size = size;
     };
   };

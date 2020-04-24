@@ -315,10 +315,8 @@ export default {
         if (
           newValue &&
           oldValue &&
-          (oldValue.pageValue != newValue.pageValue ||
-            oldValue.size != newValue.size ||
-            (oldValue.executeSize != newValue.executeSize &&
-              newValue.executeSize != 0))
+          (  oldValue.executeSize != newValue.executeSize &&
+              newValue.executeSize != 0)
         ) {
           //setPageValue,setSize,action三个函数中添加了下面的方法。故这里去掉，以免数据初始化也会造成请求
           obj.updateBeforeInfos();
