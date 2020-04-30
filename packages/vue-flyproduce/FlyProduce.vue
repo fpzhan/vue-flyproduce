@@ -45,12 +45,12 @@ export default {
       ajaxParam: [
         "options",
         "async",
-        "beforeSend",
+        // "beforeSend",
         "cache",
-        "complete",
+        // "complete",
         "contentType",
         "context",
-        "dataFilter",
+        // "dataFilter",
         "dataType",
         "global",
         "ifModified",
@@ -216,6 +216,7 @@ export default {
       }
     },
     //发起ajax请求
+
     action() {
       var current = this;
 
@@ -272,17 +273,29 @@ export default {
               }
             }
           }
-          current.getProps("success") && current.getProps("success")(res);
+          // current.getProps("success") && current.getProps("success")(res);
+          current.executeFunc("success", [res]);
           debugger;
           if (current.getProps("inputClear")) {
             current.clearObject(current.getProps("input"));
           }
         },
         error: function(res) {
-          current.getProps("error") && current.getProps("error")(res);
+          // current.getProps("error") && current.getProps("error")(res);
+          current.executeFunc("error", [res]);
           if (current.getProps("inputClear")) {
             current.clearObject(current.getProps("input"));
           }
+        },
+        beforeSend: function(xhr) {
+          return current.executeFunc("beforeSend", [xhr]);
+        },
+        dataFilter: function(data, type) {
+          var res = current.executeFunc("dataFilter", [data, type]);
+          return res;
+        },
+        complete: function(xhr, ts) {
+          return current.executeFunc("complete", [xhr, ts]);
         }
       };
 
@@ -299,8 +312,108 @@ export default {
       }
 
       $.ajax(ajaxObj);
+    },
+    /**
+     * infos.customFunc是Object ，type为key。value是Array ，value的元素为Object
+     * 每个元素的格式{
+     *     index:number, 回调的顺序
+     *     callback:function 回调的函数
+     * }
+     * @param type
+     * @param paramList
+     * @return {*}
+     */
+    executeFunc(type, paramList) {
+      if (
+        this.getProps("customFunc") &&
+        this.getProps("customFunc")[type] &&
+        this.getProps("customFunc")[type] instanceof Array
+      ) {
+        var tmp = {};
+        for (var i = 0; i < this.getProps("customFunc")[type].length; i++) {
+          for (
+            var j = i + 1;
+            j < this.getProps("customFunc")[type].length;
+            j++
+          ) {
+            if (
+              this.isNumber(this.getProps("customFunc")[type][i], "index") &&
+              this.isNumber(this.getProps("customFunc")[type][j], "index") &&
+              this.getProps("customFunc")[type][i]["index"] >
+                this.getProps("customFunc")[type][j]["index"]
+            ) {
+              tmp = this.getProps("customFunc")[type][j];
+              this.getProps("customFunc")[type][j] = this.getProps(
+                "customFunc"
+              )[type][i];
+              this.getProps("customFunc")[type][i] = tmp;
+            }
+          }
+        }
+        var customContext = [];
+        for (var k = 0; k < this.getProps("customFunc")[type].length; k++) {
+          if (
+            this.isFunction(this.getProps("customFunc")[type][k], "callback") &&
+            this.isNumber(this.getProps("customFunc")[type][k], "index")
+          ) {
+            if (type == "success" || type == "error" || type == "beforeSend") {
+              customContext.push({
+                index: this.getProps("customFunc")[type][k]["index"],
+                result: this.getProps("customFunc")[type][k]["callback"](
+                  paramList[0],
+                  customContext
+                )
+              });
+            } else if (type == "dataFilter" || type == "complete") {
+              customContext.push({
+                index: this.getProps("customFunc")[type][k]["index"],
+                result: this.getProps("customFunc")[type][k]["callback"](
+                  paramList[0],
+                  paramList[1],
+                  customContext
+                )
+              });
+            }
+          }
+        }
+        if (customContext.length == 0) {
+          if (type == "dataFilter") {
+            return paramList[0];
+          } else {
+            return;
+          }
+        } else {
+          return customContext[customContext.length - 1].result;
+        }
+      }
+      if (type == "dataFilter") {
+        return paramList[0];
+      } else {
+        return;
+      }
+    },
+    isNumber(rootVar, childVar) {
+      if (
+        rootVar &&
+        rootVar[childVar] != undefined &&
+        !isNaN(rootVar[childVar])
+      ) {
+        return true;
+      }
+      return false;
+    },
+    isFunction(rootVar, childVar) {
+      if (
+        rootVar &&
+        rootVar[childVar] &&
+        rootVar[childVar] instanceof Function
+      ) {
+        return true;
+      }
+      return false;
     }
   },
+
   watch: {
     // //监听第几页，改变进行值修改
     // pageValue: function() {
@@ -315,8 +428,8 @@ export default {
         if (
           newValue &&
           oldValue &&
-          (  oldValue.executeSize != newValue.executeSize &&
-              newValue.executeSize != 0)
+          (oldValue.executeSize != newValue.executeSize &&
+            newValue.executeSize != 0)
         ) {
           //setPageValue,setSize,action三个函数中添加了下面的方法。故这里去掉，以免数据初始化也会造成请求
           obj.updateBeforeInfos();

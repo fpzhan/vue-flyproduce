@@ -1,10 +1,27 @@
 (function() {
   var FlyInterface = function(obj) {
+    var ajaxFuncName = [
+      "success",
+      "error",
+      "beforeSend",
+      "dataFilter",
+      "complete"
+    ];
     if (isObject(obj)) {
       this.infos = obj;
       this.infos.executeSize = 0;
     } else {
       this.infos = { executeSize: 0 };
+    }
+
+    function contains(a, obj) {
+      var i = a.length;
+      while (i--) {
+        if (a[i] === obj) {
+          return true;
+        }
+      }
+      return false;
     }
 
     function isObject(data) {
@@ -23,7 +40,6 @@
     this.action = function() {
       this.updateBeforeInfos();
       this.infos.executeSize = this.infos.executeSize + 1;
-
     };
 
     this.updateBeforeInfos = function() {
@@ -44,11 +60,52 @@
       if (isObject(data)) {
         for (var key in data) {
           if (data[key] != undefined) {
-            this.infos[key] = data[key];
+            if (contains(ajaxFuncName, key)) {
+              if (!this.infos.customFunc) {
+                this.infos.customFunc = {};
+              }
+              if (
+                !this.infos.customFunc[key] ||
+                !(this.infos.customFunc[key] instanceof Array)
+              ) {
+                this.infos.customFunc[key] = [];
+              }
+              this.infos.customFunc[key].push({
+                index: 0,
+                callback: data[key]
+              });
+            } else {
+              this.infos[key] = data[key];
+            }
           }
         }
       }
       return this;
+    };
+
+    this.appendFuncs = function(list) {
+      for (var i in list) {
+        this.appendFunc(list[i]["type"], list[i]["index"], list[i]["callback"]);
+      }
+    };
+
+    this.appendFunc = function(type, index, func) {
+      if (type && index && func) {
+        if (!this.infos.customFunc) {
+          this.infos.customFunc = {};
+        }
+        if (
+          !this.infos.customFunc[type] ||
+          !(this.infos.customFunc[type] instanceof Array)
+        ) {
+          this.infos.customFunc[type] = [];
+        }
+        this.infos.customFunc[type].push({ index: index, callback: func });
+      } else {
+        console.warn(
+          "flyproduce 中appendFunc函数必须传入type，index，func才生效！"
+        );
+      }
     };
 
     this.setInput = function(data) {

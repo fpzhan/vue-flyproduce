@@ -59,7 +59,11 @@ export default {
         input: student.objects.StudentEntity({ studentId: 1 }).instance(),
         output: student.objects.StudentEntity().instance(),
         init: true,
-        submitId: "addEles"
+        submitId: "addEles",
+        success: function(data, a, b) {
+          debugger;
+          console.log(data);
+        }
       },
       operation: student.interfaces.selectFlyStudentInfo()
     };
