@@ -38,8 +38,16 @@
     this.beforeInfos = undefined;
 
     this.action = function() {
-      this.updateBeforeInfos();
-      this.infos.executeSize = this.infos.executeSize + 1;
+      if (
+        this.infos.async == false &&
+        this.syncAction &&
+        typeof this.syncAction == "function"
+      ) {
+        this.syncAction();
+      } else {
+        this.updateBeforeInfos();
+        this.infos.executeSize = this.infos.executeSize + 1;
+      }
     };
 
     this.updateBeforeInfos = function() {

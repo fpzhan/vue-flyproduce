@@ -69,6 +69,12 @@ export default {
   },
   mounted: function() {
     var current = this;
+    if (
+      this.$props.flyAction &&
+      this.$props.flyAction instanceof FlyInterface
+    ) {
+      this.$props.flyAction.syncAction = this.action;
+    }
     this.$nextTick(function() {
       //页面渲染完成后，进行触发ajax请求节点的元素绑定
       current.getProps("submitId") &&
